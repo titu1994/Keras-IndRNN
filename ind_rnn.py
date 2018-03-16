@@ -140,6 +140,12 @@ class IndRNNCell(Layer):
             if hasattr(self, 'timesteps') and self.timesteps is not None:
                 self.recurrent_clip_max = pow(2.0, 1. / self.timesteps)
             else:
+                warnings.warn("IndRNNCell: Number of timesteps could not be determined. \n"
+                              "Defaulting to max clipping range of 1.0. \n"
+                              "If this model was trained using a specific timestep during training, "
+                              "inference may be wrong due to this default setting.\n"
+                              "Please ensure that you use the same number of timesteps during training "
+                              "and evaluation")
                 self.recurrent_clip_max = 1.0
 
         self.kernel = self.add_weight(shape=(input_dim, self.units),
