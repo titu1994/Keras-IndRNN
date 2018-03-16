@@ -39,5 +39,6 @@ Since it may not be possible to determine the number of timesteps for variable t
 - [x] Implement IMDB trial
 - [x] Implement Addition problem trial
 - [x] Implement Sequential MNIST trial
-- [x] See if MNIST converges to the paper results. I won't be able to do this since it takes too long to train a 2 layer model on MNIST.
-
+- [ ] See if MNIST converges to the paper results
+- [ ] Implement Recurrent BatchNorm
+- [ ] Implement Multilayer IndRNN using Residual connections
