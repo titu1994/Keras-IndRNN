@@ -156,8 +156,9 @@ class IndRNNCell(Layer):
 
         if self.recurrent_initializer is None:
             if self.recurrent_clip_min is not None and self.recurrent_clip_max is not None:
-                self.recurrent_initializer = initializers.uniform(-self.recurrent_clip_max,
-                                                                  self.recurrent_clip_max)
+                initialization_value = min(self.recurrent_clip_max, 1.0)
+                self.recurrent_initializer = initializers.uniform(-initialization_value,
+                                                                  initialization_value)
             else:
                 self.recurrent_initializer = initializers.uniform(-1.0, 1.0)
 

@@ -9,6 +9,7 @@ import os
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
+from keras import initializers
 from keras.callbacks import ModelCheckpoint
 
 from ind_rnn import IndRNNCell, RNN
@@ -54,7 +55,7 @@ cells = [IndRNNCell(NUM_UNITS),
 print('Build model...')
 model = Sequential()
 model.add(RNN(cells, input_shape=(TIME_STEPS, 2)))
-model.add(Dense(1, activation='linear'))
+model.add(Dense(1, activation='linear', bias_initializer=initializers.constant(0.1)))
 
 # try using different optimizers and different optimizer configs
 optimizer = Adam(LEARNING_RATE, amsgrad=True)
