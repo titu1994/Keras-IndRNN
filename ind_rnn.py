@@ -501,7 +501,6 @@ class IndRNN(RNN):
         config = {'units': self.units,
                   'recurrent_clip_min': self.recurrent_clip_min,
                   'recurrent_clip_max': self.recurrent_clip_max,
-                  'depth': self.recurrent_clip_min,
                   'activation': activations.serialize(self.activation),
                   'use_bias': self.use_bias,
                   'kernel_initializer': initializers.serialize(self.kernel_initializer),
