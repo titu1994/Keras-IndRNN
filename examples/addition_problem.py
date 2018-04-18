@@ -47,6 +47,10 @@ def batch_generator():
         # inputs has the shape (batch_size, time_steps, 2)
         inputs = np.dstack((add_values, add_indices))
         targets = np.sum(np.multiply(add_values, add_indices), axis=1)
+
+        # center at zero mean
+        inputs -= np.mean(inputs, axis=0)
+
         yield inputs, targets
 
 cells = [IndRNNCell(NUM_UNITS),
