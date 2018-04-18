@@ -49,7 +49,7 @@ def batch_generator():
         targets = np.sum(np.multiply(add_values, add_indices), axis=1)
 
         # center at zero mean
-        inputs -= np.mean(inputs, axis=0)
+        inputs -= np.mean(inputs, axis=0, keepdims=True)
 
         yield inputs, targets
 
