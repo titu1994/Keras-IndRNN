@@ -1,16 +1,27 @@
 from __future__ import absolute_import
 import warnings
 
-from keras import backend as K
-from keras import activations
-from keras import initializers
-from keras import regularizers
-from keras import constraints
-from keras.engine import Layer
-from keras.engine import InputSpec
-from keras.legacy import interfaces
-from keras.layers import RNN
-from keras.layers.recurrent import _generate_dropout_mask
+from tensorflow.keras import backend as K
+from tensorflow.keras import activations
+from tensorflow.keras import initializers
+from tensorflow.keras import regularizers
+from tensorflow.keras import constraints
+from tensorflow.keras.layers import Layer
+from tensorflow.keras.layers import InputSpec
+from tensorflow.keras.layers import RNN
+
+def _generate_dropout_mask(ones, rate, training=None, count=1):
+    def dropped_inputs():
+        return K.dropout(ones, rate)
+    if count > 1:
+        return [K.in_train_phase(
+            dropped_inputs,
+            ones,
+            training=training) for _ in range(count)]
+    return K.in_train_phase(
+        dropped_inputs,
+        ones,
+        training=training)
 
 class IndRNNCell(Layer):
     """Independently Recurrent Neural Networks Cell class.
@@ -77,8 +88,8 @@ class IndRNNCell(Layer):
     """
 
     def __init__(self, units,
-                 recurrent_clip_min=-1,
-                 recurrent_clip_max=-1,
+                 recurrent_clip_min=-2,
+                 recurrent_clip_max=2,
                  activation='relu',
                  use_bias=True,
                  kernel_initializer='glorot_uniform',
@@ -138,7 +149,7 @@ class IndRNNCell(Layer):
             self.recurrent_clip_min = 0.0
 
             if hasattr(self, 'timesteps') and self.timesteps is not None:
-                self.recurrent_clip_max = pow(2.0, 1. / self.timesteps)
+                self.recurrent_clip_max = pow(2.0, 1. / int(self.timesteps))
             else:
                 warnings.warn("IndRNNCell: Number of timesteps could not be determined. \n"
                               "Defaulting to max clipping range of 1.0. \n"
@@ -157,10 +168,10 @@ class IndRNNCell(Layer):
         if self.recurrent_initializer is None:
             if self.recurrent_clip_min is not None and self.recurrent_clip_max is not None:
                 initialization_value = min(self.recurrent_clip_max, 1.0)
-                self.recurrent_initializer = initializers.uniform(-initialization_value,
+                self.recurrent_initializer = initializers.RandomUniform(-initialization_value,
                                                                   initialization_value)
             else:
-                self.recurrent_initializer = initializers.uniform(-1.0, 1.0)
+                self.recurrent_initializer = initializers.RandomUniform(-1.0, 1.0)
 
         self.recurrent_kernel = self.add_weight(shape=(self.units,),
                                                 name='recurrent_kernel',
@@ -344,7 +355,6 @@ class IndRNN(RNN):
         - [Independently Recurrent Neural Network (IndRNN): Building A Longer and Deeper RNN](https://arxiv.org/abs/1803.04831)
     """
 
-    @interfaces.legacy_recurrent_support
     def __init__(self, units,
                  recurrent_clip_min=-1,
                  recurrent_clip_max=-1,
